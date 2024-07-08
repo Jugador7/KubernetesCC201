@@ -1,0 +1,113 @@
+Let’s look at some basic kubectl commands.
+
+kubectl requires configuration so that it targets the appropriate cluster. Get cluster information with the following command:
+
+kubectl config get-clusters
+
+
+
+A kubectl context is a group of access parameters, including a cluster, a user, and a namespace. View your current context with the following command:
+
+kubectl config get-contexts
+
+
+
+List all the Pods in your namespace. If this is a new session for you, you will not see any Pods.
+
+kubectl get pods
+
+Export your namespace as an environment variable so that it can be used in subsequent commands.
+export MY_NAMESPACE=sn-labs-$USERNAME
+
+
+Click the Explorer icon (it looks like a sheet of paper) on the left side of the window, and then navigate to the directory for this lab: CC201 > labs > 2_IntroKubernetes. Click on Dockerfile. This is the file that will be used to build our image.
+
+Build and push the image again, as it may have been deleted automatically since you completed the first lab.
+
+docker build -t us.icr.io/$MY_NAMESPACE/hello-world:1 . && docker push us.icr.io/$MY_NAMESPACE/hello-world:1
+
+
+
+Run the hello-world image as a container in Kubernetes.
+
+kubectl run hello-world --image us.icr.io/$MY_NAMESPACE/hello-world:1 --overrides='{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"icr"}]}}}}'
+
+The --overrides option here enables us to specify the needed credentials to pull this image from IBM Cloud Container Registry. Note that this is an imperative command, as we told Kubernetes explicitly what to do: run hello-world.
+
+
+
+List the Pods in your namespace.
+
+kubectl get pods
+
+
+
+Great, the previous command indeed created a Pod for us. You can see an auto-generated name was given to this Pod.
+
+You can also specify the wide option for the output to get more details about the resource.
+
+kubectl get pods -o wide
+
+
+Describe the Pod to get more details about it.
+
+kubectl describe pod hello-world
+
+
+
+Note: The output shows the pod parameters like Namespace, Pod Name, IP address, the time when the pod started running and also the container parameters like container ID, image name & ID, running status and the memory/CPU limits.
+
+Delete the Pod.
+
+kubectl delete pod hello-world
+
+
+This command takes a while to execute the deletion of the pod. Please wait till the terminal prompt appears again.
+
+List the Pods to verify that none exist.
+
+kubectl get pods
+
+
+
+
+
+
+
+
+
+
+
+
+
+Create a Pod with imperative object configuration
+Imperative object configuration lets you create objects by specifying the action to take (e.g., create, update, delete) while using a configuration file. A configuration file, hello-world-create.yaml, is provided to you in this directory.
+
+Use the Explorer to view and edit the configuration file. Click the Explorer icon (it looks like a sheet of paper) on the left side of the window, and then navigate to the directory for this lab: CC201 > labs > 2_IntroKubernetes. Click hello-world-create.yaml to view the configuration file.
+
+
+Use the Explorer to edit hello-world-create.yaml. You need to insert your namespace where it says <my_namespace>. Make sure to save the file when you’re done.
+
+
+Imperatively create a Pod using the provided configuration file.
+kubectl create -f hello-world-create.yaml
+Note that this is indeed imperative, as you explicitly told Kubernetes to create the resources defined in the file.
+
+
+
+List the Pods in your namespace.
+kubectl get pods
+
+
+Delete the Pod.
+kubectl delete pod hello-world
+
+
+This command takes a while to execute the deletion of the pod. Please wait till the terminal prompt appears again.
+
+List the Pods to verify that none exist.
+kubectl get pods
+
+
+Previous
+
